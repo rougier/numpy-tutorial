@@ -18,6 +18,9 @@ Attribution-ShareAlike 4.0 <http://creativecommons.org/licenses/by-sa/4.0>`_.
 
 Tutorial can be read at http://www.labri.fr/perso/nrougier/teaching/numpy/numpy.html
 
+See also:
+ * `Matplotlib tutorial <http://www.labri.fr/perso/nrougier/teaching/matplotlib/matplotlib.html>`_
+ * `100 Numpy exercices <http://www.labri.fr/perso/nrougier/teaching/numpy.100/index.html>`_
 
 
 Introduction
