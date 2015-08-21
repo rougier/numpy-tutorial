@@ -6,6 +6,8 @@ Numpy tutorial
 Nicolas P. Rougier
 ------------------
 
+.. image:: https://zenodo.org/badge/doi/10.5281/zenodo.28817.png
+   :target: http://dx.doi.org/10.5281/zenodo.28817
 
 .. contents:: Table of Contents
    :local:
