@@ -1,0 +1,1406 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.12: http://docutils.sourceforge.net/" />
+<title>Numpy tutorial</title>
+<link rel="stylesheet" href="dana.css" type="text/css" />
+<link rel="stylesheet" href="/usr/locaL/lib/python2.7/site-packages/docutils/writers/html4css1/math.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="numpy-tutorial">
+<h1 class="title">Numpy tutorial</h1>
+<h2 class="subtitle" id="nicolas-p-rougier">Nicolas P. Rougier</h2>
+
+<div class="contents local topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#introduction" id="id2">Introduction</a></li>
+<li><a class="reference internal" href="#the-game-of-life" id="id3">The Game of Life</a></li>
+<li><a class="reference internal" href="#exercises" id="id4">Exercises</a></li>
+<li><a class="reference internal" href="#beyond-this-tutorial" id="id5">Beyond this tutorial</a></li>
+<li><a class="reference internal" href="#quick-references" id="id6">Quick references</a></li>
+</ul>
+</div>
+<p>All code and material is licensed under a <a class="reference external" href="http://creativecommons.org/licenses/by-sa/4.0">Creative Commons
+Attribution-ShareAlike 4.0</a>. Sources are available from
+<a class="reference external" href="https://github.com/rougier/matplotlib-tutorial">github</a></p>
+<p>Tutorial can be read at <a class="reference external" href="http://www.labri.fr/perso/nrougier/teaching/numpy/">http://www.labri.fr/perso/nrougier/teaching/numpy/</a></p>
+<div class="section" id="introduction">
+<h1><a class="toc-backref" href="#id2">Introduction</a></h1>
+<p>NumPy is the fundamental package for scientific computing with Python. It
+contains among other things:</p>
+<ul class="simple">
+<li>→ a powerful N-dimensional array object</li>
+<li>→ sophisticated (broadcasting) functions</li>
+<li>→ tools for integrating C/C++ and Fortran code</li>
+<li>→ useful linear algebra, Fourier transform, and random number capabilities</li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Besides its obvious scientific uses, NumPy can also be used as an efficient
+multi-dimensional container of generic data. Arbitrary data-types can be
+defined and this allows NumPy to seamlessly and speedily integrate with a wide
+variety of projects. We are going to explore numpy through a simple example,
+implementing the Game of Life.</p>
+</div>
+<div class="section" id="the-game-of-life">
+<h1><a class="toc-backref" href="#id3">The Game of Life</a></h1>
+<p>Numpy is slanted toward scientific computing and we'll consider in this section
+the <a class="reference external" href="http://en.wikipedia.org/wiki/Conway's_Game_of_Life">game of life</a> by
+John Conway which is one of the earliest example of cellular automata (see
+figure below). Those cellular automaton can be conveniently considered as array
+of cells that are connected together through the notion of neighbours. We'll
+show in the following sections implementation of this game using pure python
+and numpy in order to illustrate main differences with python and numpy.</p>
+<div class="figure">
+<img alt="figures/game-of-life.png" src="figures/game-of-life.png" />
+<p class="caption"><strong>Figure 1</strong> Simulation of the game of life.</p>
+</div>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is an excerpt from <a class="reference external" href="http://en.wikipedia.org/wiki/Cellular_automaton">wikipedia</a> entry on Cellular
+Automaton.</p>
+</div>
+<p>The Game of Life, also known simply as Life, is a cellular automaton devised
+by the British mathematician John Horton Conway in 1970.  It is the
+best-known example of a cellular automaton. The &quot;game&quot; is actually a
+zero-player game, meaning that its evolution is determined by its initial
+state, needing no input from human players. One interacts with the Game of
+Life by creating an initial configuration and observing how it evolves.</p>
+<p>The universe of the Game of Life is an infinite two-dimensional orthogonal grid
+of square cells, each of which is in one of two possible states, live or
+dead. Every cell interacts with its eight neighbours, which are the cells that
+are directly horizontally, vertically, or diagonally adjacent. At each step in
+time, the following transitions occur:</p>
+<ol class="arabic simple">
+<li>Any live cell with fewer than two live neighbours dies, as if by needs caused
+by underpopulation.</li>
+<li>Any live cell with more than three live neighbours dies, as if by
+overcrowding.</li>
+<li>Any live cell with two or three live neighbours lives, unchanged, to the next
+generation.</li>
+<li>Any dead cell with exactly three live neighbours becomes a live cell.</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>The initial pattern constitutes the 'seed' of the system.  The first generation
+is created by applying the above rules simultaneously to every cell in the seed
+– births and deaths happen simultaneously, and the discrete moment at which
+this happens is sometimes called a tick. (In other words, each generation is a
+pure function of the one before.)  The rules continue to be applied repeatedly
+to create further generations.</p>
+<p>We'll first use a very simple setup and more precisely, we'll use the <a class="reference external" href="http://en.wikipedia.org/wiki/Glider_(Conway's_Life)">glider</a> pattern that is known to
+move one step diagonally in 4 iterations as illustrated below:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="3%" />
+<col width="17%" />
+<col width="3%" />
+<col width="17%" />
+<col width="3%" />
+<col width="17%" />
+<col width="3%" />
+<col width="17%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><img alt="figures/glider-00.png" class="first" src="figures/glider-00.png" />
+<p class="last"><em>t = 0</em></p>
+</td>
+<td>&nbsp;</td>
+<td><img alt="figures/glider-01.png" class="first" src="figures/glider-01.png" />
+<p class="last"><em>t = 1</em></p>
+</td>
+<td>&nbsp;</td>
+<td><img alt="figures/glider-02.png" class="first" src="figures/glider-02.png" />
+<p class="last"><em>t = 2</em></p>
+</td>
+<td>&nbsp;</td>
+<td><img alt="figures/glider-03.png" class="first" src="figures/glider-03.png" />
+<p class="last"><em>t = 3</em></p>
+</td>
+<td>&nbsp;</td>
+<td><img alt="figures/glider-04.png" class="first" src="figures/glider-04.png" />
+<p class="last"><em>t = 4</em></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>This property will help us debug our scripts.</p>
+<div class="section" id="the-way-of-python">
+<h2>The way of python</h2>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">We could have used the more efficient <a class="reference external" href="http://docs.python.org/2/library/array.html">python array interface</a> but people may be more
+familiar with the list object.</p>
+</div>
+<p>In pure python, we can code the Game of Life using a list of lists representing
+the board where cells are supposed to evolve:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; Z = [[0,0,0,0,0,0],
+         [0,0,0,1,0,0],
+         [0,1,0,1,0,0],
+         [0,0,1,1,0,0],
+         [0,0,0,0,0,0],
+         [0,0,0,0,0,0]]
+</pre>
+<p>This board possesses a <tt class="docutils literal">0</tt> border that allows to accelerate things a bit by
+avoiding to have specific tests for borders when counting the number of
+neighbours. First step is to count neighbours:</p>
+<pre class="literal-block">
+def compute_neigbours(Z):
+    shape = len(Z), len(Z[0])
+    N  = [[0,]*(shape[0])  for i in range(shape[1])]
+    for x in range(1,shape[0]-1):
+        for y in range(1,shape[1]-1):
+            N[x][y] = Z[x-1][y-1]+Z[x][y-1]+Z[x+1][y-1] \
+                    + Z[x-1][y]            +Z[x+1][y]   \
+                    + Z[x-1][y+1]+Z[x][y+1]+Z[x+1][y+1]
+    return N
+</pre>
+<p>To iterate one step in time, we then simply count the number of neighbours for
+each internal cell and we update the whole board according to the 4 rules:</p>
+<pre class="literal-block">
+def iterate(Z):
+    N = compute_neighbours(Z)
+    for x in range(1,shape[0]-1):
+        for y in range(1,shape[1]-1):
+             if Z[x][y] == 1 and (N[x][y] &lt; 2 or N[x][y] &gt; 3):
+                 Z[x][y] = 0
+             elif Z[x][y] == 0 and N[x][y] == 3:
+                 Z[x][y] = 1
+    return Z
+</pre>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <tt class="docutils literal">show</tt> command is supplied witht he script.</p>
+</div>
+<p>Using a dedicated display function, we can check the program's correct:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; show(Z)
+[0, 0, 1, 0]
+[1, 0, 1, 0]
+[0, 1, 1, 0]
+[0, 0, 0, 0]
+
+&gt;&gt;&gt; for i in range(4): iterate(Z)
+&gt;&gt;&gt; show(Z)
+[0, 0, 0, 0]
+[0, 0, 0, 1]
+[0, 1, 0, 1]
+[0, 0, 1, 1]
+</pre>
+<p>You can download the full script here: <a class="reference external" href="scripts/game-of-life-python.py">game-of-life-python.py</a></p>
+</div>
+<div class="section" id="the-way-of-numpy">
+<h2>The way of numpy</h2>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">There exists <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/routines.array-creation.html">many more different ways</a>
+to create a numpy array.</p>
+</div>
+<p>The first thing to do is to create the proper numpy array to hold the
+cells. This can be done very easily with:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; Z = np.array([[0,0,0,0,0,0],
+                  [0,0,0,1,0,0],
+                  [0,1,0,1,0,0],
+                  [0,0,1,1,0,0],
+                  [0,0,0,0,0,0],
+                  [0,0,0,0,0,0]])
+</pre>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">For a complete review on numpy data types, check the <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html">documentation</a>.</p>
+</div>
+<p>Note that we did not specify the <a class="reference internal" href="#data-type">data type</a> of the array and thus, numpy will
+choose one for us. Since all elements are integers, numpy will then choose an
+integer data type. This can be easily checked using:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; print Z.dtype
+int64
+</pre>
+<p>We can also check the shape of the array to make sure it is 6x6:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; print Z.shape
+(6, 6)
+</pre>
+<p>Each element of <tt class="docutils literal">Z</tt> can be accessed using a <tt class="docutils literal">row</tt> and a <tt class="docutils literal">column</tt>
+index (in that order):</p>
+<pre class="literal-block">
+&gt;&gt;&gt; print Z[0,5]
+0
+</pre>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">This element access is actually called <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/arrays.indexing.html">indexing</a> and this
+is very powerful tool for vectorized computation.</p>
+</div>
+<p>But even better, we can also access a subpart of the array using the slice
+notation:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; print Z[1:5,1:5]
+[[0 0 1 0]
+ [1 0 1 0]
+ [0 1 1 0]
+ [0 0 0 0]]
+</pre>
+<p>In the example above, we actually extract a subpart of <tt class="docutils literal">Z</tt> ranging from rows 1 to
+5 and columns 1 to 5. It is important to understand at this point that this is
+really a subpart of <tt class="docutils literal">Z</tt> in the sense that any change to this subpart will
+have immediate impact on <tt class="docutils literal">Z</tt>:</p>
+<blockquote>
+<pre class="doctest-block">
+&gt;&gt;&gt; A = Z[1:5,1:5]
+&gt;&gt;&gt; A[0,0] = 9
+&gt;&gt;&gt; print A
+[[9 0 1 0]
+ [1 0 1 0]
+ [0 1 1 0]
+ [0 0 0 0]]
+</pre>
+<pre class="doctest-block">
+&gt;&gt;&gt; print Z
+[[0 0 0 0 0 0]
+ [0 9 0 1 0 0]
+ [0 1 0 1 0 0]
+ [0 0 1 1 0 0]
+ [0 0 0 0 0 0]
+ [0 0 0 0 0 0]]
+</pre>
+</blockquote>
+<p>We set the value of <tt class="docutils literal">A[0,0]</tt> to 9 and we see immediate change in <tt class="docutils literal">Z[1,1]</tt>
+because <tt class="docutils literal">A[0,0]</tt> actually corresponds to <tt class="docutils literal">Z[1,1]</tt>. This may seem trivial
+with such simple arrays, but things can become much more complex (we'll see
+that later). If in doubt, you can check easily if an array is part of another
+one:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; print Z.base is None
+True
+&gt;&gt;&gt; print A.base is Z
+True
+</pre>
+<div class="section" id="counting-neighbours">
+<h3>Counting neighbours</h3>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">It is not always possible to vectorize computations and it requires
+generally some experience. You'll acquire this experience by using numpy (of
+course) but also by asking questions on the <a class="reference external" href="http://mail.scipy.org/mailman/listinfo/numpy-discussion">mailing list</a></p>
+</div>
+<p>We now need a function to count the neighbours. We could do it the same way as
+for the python version, but this would make things very slow because of the
+nested loops. We would prefer to act on the whole array whenever possible, this
+is called <em>vectorization</em>.</p>
+<p>Ok, let's start then...</p>
+<p>First, you need to know that you can manipulate <tt class="docutils literal">Z</tt> <em>as if</em> (and only <em>as
+if</em>) it was a regular scalar:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; print 1+(2*Z+3)
+[[4 4 4 4 4 4]
+ [4 4 4 6 4 4]
+ [4 6 4 6 4 4]
+ [4 4 6 6 4 4]
+ [4 4 4 4 4 4]
+ [4 4 4 4 4 4]]
+</pre>
+<p>If you look carefully at the output, you may realize that the ouptut
+corresponds to the formula above applied individually to each element. Said
+differently, we have <tt class="docutils literal"><span class="pre">(1+(2*Z+3))[i,j]</span> == <span class="pre">(1+(2*Z[i,j]+3))</span></tt> for any i,j.</p>
+<p>Ok, so far, so good. Now what happens if we add Z with one of its subpart,
+let's say <tt class="docutils literal"><span class="pre">Z[-1:1,-1:1]</span></tt> ?</p>
+<blockquote>
+<pre class="doctest-block">
+&gt;&gt;&gt; Z + Z[-1:1,-1:1]
+Traceback (most recent call last):
+File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
+ValueError: operands could not be broadcast together with shapes (6,6) (4,4)
+</pre>
+</blockquote>
+<p>This raises a <tt class="docutils literal">Value Error</tt>, but more interestingly, numpy complains about
+the impossibility of <em>broadcasting</em> the two arrays together. <a class="reference internal" href="#broadcasting">Broadcasting</a> is
+a very powerful feature of numpy and most of the time, it saves you a lot of
+hassle.  Let's consider for example the following code:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; print Z+1
+[[1 1 1 1 1 1]
+ [1 1 1 2 1 1]
+ [1 2 1 2 1 1]
+ [1 1 2 2 1 1]
+ [1 1 1 1 1 1]
+ [1 1 1 1 1 1]]
+</pre>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">See also <a class="reference external" href="http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html">the broadcasting section</a> in the
+numpy documentation.</p>
+</div>
+<p>How can a matrix and a scalar be added together ? Well, they can't. But numpy
+is smart enough to guess that you actually want to add 1 to each of the element
+of <tt class="docutils literal">Z</tt>. This concept of broadcasting is quite powerful and it will take you
+some time before masterizing it fully (if even possible).</p>
+<p>However, in the present case (counting neighbours if you remember), we won't
+use broadcasting (uh ?). But we'll use vectorize computation using the
+following code:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; N = np.zeros(Z.shape, dtype=int)
+&gt;&gt;&gt; N[1:-1,1:-1] += (Z[ :-2, :-2] + Z[ :-2,1:-1] + Z[ :-2,2:] +
+                     Z[1:-1, :-2]                + Z[1:-1,2:] +
+                     Z[2:  , :-2] + Z[2:  ,1:-1] + Z[2:  ,2:])
+</pre>
+<p>To understand this code, have a look at the figure below:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><img alt="figures/neighbours-1.png" class="first last" src="figures/neighbours-1.png" />
+</td>
+<td><img alt="figures/neighbours-2.png" class="first last" src="figures/neighbours-2.png" />
+</td>
+<td><img alt="figures/neighbours-3.png" class="first last" src="figures/neighbours-3.png" />
+</td>
+</tr>
+<tr><td><img alt="figures/neighbours-4.png" class="first last" src="figures/neighbours-4.png" />
+</td>
+<td><img alt="figures/neighbours-5.png" class="first last" src="figures/neighbours-5.png" />
+</td>
+<td><img alt="figures/neighbours-6.png" class="first last" src="figures/neighbours-6.png" />
+</td>
+</tr>
+<tr><td><img alt="figures/neighbours-7.png" class="first last" src="figures/neighbours-7.png" />
+</td>
+<td><img alt="figures/neighbours-8.png" class="first last" src="figures/neighbours-8.png" />
+</td>
+<td><img alt="figures/neighbours-9.png" class="first last" src="figures/neighbours-9.png" />
+</td>
+</tr>
+</tbody>
+</table>
+<p>What we actually did with the above code is to add all the darker blue squares
+together. Since they have been chosen carefully, the result will be exactly
+what we expected. If you want to convince yourself, consider a cell in the
+lighter blue area of the central sub-figure and check what will the result for
+a given cell.</p>
+</div>
+<div class="section" id="iterate">
+<h3>Iterate</h3>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">Note the use of the <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.ravel.html?highlight=ravel#numpy.ravel">ravel</a> function that flatten an array. This is necessary since the argwhere function returns flattened indices.</p>
+</div>
+<p>In a first approach, we can write the iterate function using the <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.argwhere.html">argwhere</a>
+method that will give us the indices where a given condition is True.</p>
+<pre class="literal-block">
+def iterate(Z):
+    # Iterate the game of life : naive version
+    # Count neighbours
+    N = np.zeros(Z.shape, int)
+    N[1:-1,1:-1] += (Z[0:-2,0:-2] + Z[0:-2,1:-1] + Z[0:-2,2:] +
+                     Z[1:-1,0:-2]                + Z[1:-1,2:] +
+                     Z[2:  ,0:-2] + Z[2:  ,1:-1] + Z[2:  ,2:])
+    N_ = N.ravel()
+    Z_ = Z.ravel()
+
+    # Apply rules
+    R1 = np.argwhere( (Z_==1) &amp; (N_ &lt; 2) )
+    R2 = np.argwhere( (Z_==1) &amp; (N_ &gt; 3) )
+    R3 = np.argwhere( (Z_==1) &amp; ((N_==2) | (N_==3)) )
+    R4 = np.argwhere( (Z_==0) &amp; (N_==3) )
+
+    # Set new values
+    Z_[R1] = 0
+    Z_[R2] = 0
+    Z_[R3] = Z_[R3]
+    Z_[R4] = 1
+
+    # Make sure borders stay null
+    Z[0,:] = Z[-1,:] = Z[:,0] = Z[:,-1] = 0
+</pre>
+<p>Even if this first version does not use nested loops, it is far from optimal
+because of the use of the 4 argwhere calls that may be quite slow. We can
+instead take advantages of numpy features the following way.</p>
+<pre class="literal-block">
+def iterate_2(Z):
+    # Count neighbours
+    N = (Z[0:-2,0:-2] + Z[0:-2,1:-1] + Z[0:-2,2:] +
+         Z[1:-1,0:-2]                + Z[1:-1,2:] +
+         Z[2:  ,0:-2] + Z[2:  ,1:-1] + Z[2:  ,2:])
+
+    # Apply rules
+    birth = (N==3) &amp; (Z[1:-1,1:-1]==0)
+    survive = ((N==2) | (N==3)) &amp; (Z[1:-1,1:-1]==1)
+    Z[...] = 0
+    Z[1:-1,1:-1][birth | survive] = 1
+    return Z
+</pre>
+<p>If you look at the <tt class="docutils literal">birth</tt> and <tt class="docutils literal">survive</tt> lines, you'll see that these two
+variables are indeed arrays. The right-hand side of these two expressions are
+in fact logical expressions that will result in boolean arrays (just print them
+to check). We then set all <tt class="docutils literal">Z</tt> values to 0 (all cells become dead) and we use
+the <tt class="docutils literal">birth</tt> and <tt class="docutils literal">survive</tt> arrays to conditionally set <tt class="docutils literal">Z</tt> values
+to 1. And we're done ! Let's test this:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; print Z
+[[0 0 0 0 0 0]
+ [0 0 0 1 0 0]
+ [0 1 0 1 0 0]
+ [0 0 1 1 0 0]
+ [0 0 0 0 0 0]
+ [0 0 0 0 0 0]]
+&gt;&gt;&gt; for i in range(4): iterate_2(Z)
+&gt;&gt;&gt; print Z
+[[0 0 0 0 0 0]
+ [0 0 0 0 0 0]
+ [0 0 0 0 1 0]
+ [0 0 1 0 1 0]
+ [0 0 0 1 1 0]
+ [0 0 0 0 0 0]]
+</pre>
+<p>You can download the full script here: <a class="reference external" href="scripts/game-of-life-numpy.py">game-of-life-numpy.py</a></p>
+</div>
+<div class="section" id="getting-bigger">
+<h3>Getting bigger</h3>
+<p>While numpy works perfectly with very small arrays, you'll really benefit from
+numpy power with big to very big arrays. So let us reconsider the game of life
+with a bigger array. First, we won't initalize the array by hand but initalize
+it randomly:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; Z = np.random.randint(0,2,(256,512))
+</pre>
+<p>and we simply iterate as previously:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; for i in range(100): iterate(Z)
+</pre>
+<p>and display result:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; size = np.array(Z.shape)
+&gt;&gt;&gt; dpi = 72.0
+&gt;&gt;&gt; figsize= size[1]/float(dpi),size[0]/float(dpi)
+&gt;&gt;&gt; fig = plt.figure(figsize=figsize, dpi=dpi, facecolor=&quot;white&quot;)
+&gt;&gt;&gt; fig.add_axes([0.0, 0.0, 1.0, 1.0], frameon=False)
+&gt;&gt;&gt; plt.imshow(Z,interpolation='nearest', cmap=plt.cm.gray_r)
+&gt;&gt;&gt; plt.xticks([]), plt.yticks([])
+&gt;&gt;&gt; plt.show()
+</pre>
+<img alt="figures/game-of-life-big.png" src="figures/game-of-life-big.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Easy enough, no ?</p>
+</div>
+</div>
+<div class="section" id="a-step-further">
+<h2>A step further</h2>
+<p>We have reviewed the very basics of numpy so let's move on to more complex (and
+more fun) things.</p>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">Description taken from the <a class="reference external" href="http://groups.csail.mit.edu/mac/projects/amorphous/GrayScott/">Gray-Scott homepage</a></p>
+</div>
+<p>Reaction and diffusion of chemical species can produce a variety of patterns,
+reminiscent of those often seen in nature. The Gray Scott equations model such
+a reaction. For more information on this chemical system see the article
+<strong>Complex Patterns in a Simple System</strong>, John E. Pearson, Science, Volume 261,
+9 July 1993.</p>
+<p>Let's consider two chemical species <span class="formula"><i>U</i></span> and <span class="formula"><i>V</i></span> with respective
+concentrations <span class="formula"><i>u</i></span> and <span class="formula"><i>v</i></span> and diffusion rates <span class="formula"><i>r</i><sub><i>u</i></sub></span> and
+<span class="formula"><i>r</i><sub><i>v</i></sub></span>. <span class="formula"><i>V</i></span> is converted into <span class="formula"><i>P</i></span> with a rate of conversion
+<span class="formula"><i>k</i></span>. <span class="formula"><i>f</i></span> represents the rate of the process that feeds <span class="formula"><i>U</i></span>
+and drains <span class="formula"><i>U</i></span>, <span class="formula"><i>V</i></span> and <span class="formula"><i>P</i></span>. We can now write:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Chemical reaction</th>
+<th class="head">Equations</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><ul class="first last simple">
+<li><span class="formula"><i>U</i> + 2<i>V</i>⟶3<i>V</i></span></li>
+<li><span class="formula"><i>V</i>⟶<i>P</i></span></li>
+</ul>
+</td>
+<td><ul class="first last simple">
+<li><span class="formula"><span class="fraction"><span class="ignored">(</span><span class="numerator">∂<i>u</i></span><span class="ignored">)/(</span><span class="denominator">∂<i>t</i></span><span class="ignored">)</span></span> = <i>r</i><sub><i>u</i></sub>∇<sup>2</sup><i>u</i> − <i>uv</i><sup>2</sup> + <i>f</i>(1 − <i>u</i>)</span></li>
+<li><span class="formula"><span class="fraction"><span class="ignored">(</span><span class="numerator">∂<i>v</i></span><span class="ignored">)/(</span><span class="denominator">∂<i>t</i></span><span class="ignored">)</span></span> = <i>r</i><sub><i>v</i></sub>∇<sup>2</sup><i>v</i> + <i>uv</i><sup>2</sup> − (<i>f</i> + <i>k</i>)<i>v</i></span></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><strong>Examples</strong></div>
+<div class="line">(click figure to see movie)</div>
+</div>
+<a class="reference external image-reference" href="movies/bacteria.mp4"><img alt="figures/bacteria.png" src="figures/bacteria.png" /></a>
+<a class="reference external image-reference" href="movies/fingerprint.mp4"><img alt="figures/fingerprint.png" src="figures/fingerprint.png" /></a>
+<a class="reference external image-reference" href="movies/zebra.mp4"><img alt="figures/zebra.png" src="figures/zebra.png" /></a>
+<p>Obviously, you may think we need two arrays, one for <tt class="docutils literal">U</tt> and for <tt class="docutils literal">V</tt>. But
+since <tt class="docutils literal">U</tt> and <tt class="docutils literal">V</tt> are tighly linked, it may be indeed better to use a
+single array. Numpy allows to do that with the notion of <a class="reference external" href="http://docs.scipy.org/doc/numpy/user/basics.rec.html">structured array</a>:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; n = 200
+&gt;&gt;&gt; Z = np.zeros((n+2,n+2), [('U', np.double),
+                             ('V', np.double)])
+&gt;&gt;&gt; print Z.dtype
+[('U', '&lt;f8'), ('V', '&lt;f8')]
+</pre>
+<p>The size of the array is (n+2,n+2) since we need the borders when computing the
+neighbours. However, we'll compute differential equation only in the center
+part, so we can already creates some useful views of this array:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; U,V = Z['U'], Z['V']
+&gt;&gt;&gt; u,v = U[1:-1,1:-1], V[1:-1,1:-1]
+</pre>
+<p>Next, we need to compute the Laplacian and we'll use a discrete approximation
+obtained via the <a class="reference external" href="http://en.wikipedia.org/wiki/Discrete_Laplace_operator#Finite_Differences">finite difference method</a> using the same vectorization as for the Game of Life:</p>
+<pre class="literal-block">
+def laplacian(Z):
+    return (                 Z[0:-2,1:-1] +
+            Z[1:-1,0:-2] - 4*Z[1:-1,1:-1] + Z[1:-1,2:] +
+                             Z[2:  ,1:-1] )
+</pre>
+<p>Finally, we can iterate the computation after havong choosed some interesting parameters:</p>
+<pre class="literal-block">
+for i in xrange(25000):
+    Lu = laplacian(U)
+    Lv = laplacian(V)
+    uvv = u*v*v
+    u += (Du*Lu - uvv +  F   *(1-u))
+    v += (Dv*Lv + uvv - (F+k)*v    )
+</pre>
+<p>And we're done !</p>
+<p>You can download the full script here: <a class="reference external" href="scripts/gray-scott.py">gray-scott.py</a></p>
+</div>
+</div>
+<div class="section" id="exercises">
+<h1><a class="toc-backref" href="#id4">Exercises</a></h1>
+<p>Here are some exercises, try to do them without looking at the solution (just
+highligh the blank part to see it).</p>
+<div class="section" id="neophyte">
+<h2>Neophyte</h2>
+<ol class="arabic">
+<li><p class="first">Import the numpy package under the name <tt class="docutils literal">np</tt></p>
+<pre class="code python solution literal-block">
+<span class="keyword namespace">import</span> <span class="name namespace">numpy</span> <span class="keyword namespace">as</span> <span class="name namespace">np</span>
+</pre>
+</li>
+<li><p class="first">Print the numpy version and the configuration.</p>
+<pre class="code python solution literal-block">
+<span class="keyword">print</span> <span class="name">np</span><span class="operator">.</span><span class="name">__version__</span>
+<span class="name">np</span><span class="operator">.</span><span class="name">__config__</span><span class="operator">.</span><span class="name">show</span><span class="punctuation">()</span>
+</pre>
+</li>
+</ol>
+<div class="admonition-hint admonition">
+<p class="first admonition-title">Hint</p>
+<p class="last">See <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.zeros.html">np.zeros</a></p>
+</div>
+<ol class="arabic" start="3">
+<li><p class="first">Create a null vector of size 10</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">zeros</span><span class="punctuation">(</span><span class="literal number integer">10</span><span class="punctuation">)</span>
+</pre>
+</li>
+<li><p class="first">Create a null vector of size 10 but the fifth value which is 1</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">zeros</span><span class="punctuation">(</span><span class="literal number integer">10</span><span class="punctuation">)</span>
+<span class="name">Z</span><span class="punctuation">[</span><span class="literal number integer">4</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="literal number integer">1</span>
+</pre>
+</li>
+</ol>
+<div class="admonition-hint admonition">
+<p class="first admonition-title">Hint</p>
+<p class="last">See <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.arange.html">np.arange</a></p>
+</div>
+<ol class="arabic" start="5">
+<li><p class="first">Create a vector with values ranging from 10 to 99</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="literal number integer">10</span> <span class="operator">+</span> <span class="name">np</span><span class="operator">.</span><span class="name">arange</span><span class="punctuation">(</span><span class="literal number integer">90</span><span class="punctuation">)</span>
+</pre>
+</li>
+<li><p class="first">Create a 3x3 matrix with values ranging from 0 to 8</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">arange</span><span class="punctuation">(</span><span class="literal number integer">9</span><span class="punctuation">)</span><span class="operator">.</span><span class="name">reshape</span><span class="punctuation">(</span><span class="literal number integer">3</span><span class="punctuation">,</span><span class="literal number integer">3</span><span class="punctuation">)</span>
+</pre>
+</li>
+</ol>
+<div class="admonition-hint admonition">
+<p class="first admonition-title">Hint</p>
+<p class="last">See <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.nonzero.html">np.nonzero</a></p>
+</div>
+<ol class="arabic" start="7">
+<li><p class="first">Find indices of non-zero elements from [1,2,0,0,4,0]</p>
+<pre class="code python solution literal-block">
+<span class="keyword">print</span> <span class="name">np</span><span class="operator">.</span><span class="name">nonzero</span><span class="punctuation">([</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">,</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">4</span><span class="punctuation">,</span><span class="literal number integer">0</span><span class="punctuation">])</span>
+</pre>
+</li>
+<li><p class="first">Declare a 3x3 identity matrix</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">eye</span><span class="punctuation">(</span><span class="literal number integer">3</span><span class="punctuation">)</span>
+</pre>
+</li>
+<li><p class="first">Declare a 5x5 matrix with values 1,2,3,4 just below the diagonal</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">diag</span><span class="punctuation">(</span><span class="literal number integer">1</span><span class="operator">+</span><span class="name">np</span><span class="operator">.</span><span class="name">arange</span><span class="punctuation">(</span><span class="literal number integer">4</span><span class="punctuation">),</span><span class="name">k</span><span class="operator">=-</span><span class="literal number integer">1</span><span class="punctuation">)</span>
+</pre>
+</li>
+</ol>
+<div class="admonition-hint admonition">
+<p class="first admonition-title">Hint</p>
+<p class="last">See <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/routines.random.html">Random sampling</a></p>
+</div>
+<ol class="arabic" start="10">
+<li><p class="first">Declare a 10x10x10 array with random values</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">random</span><span class="operator">.</span><span class="name">random</span><span class="punctuation">((</span><span class="literal number integer">10</span><span class="punctuation">,</span><span class="literal number integer">10</span><span class="punctuation">,</span><span class="literal number integer">10</span><span class="punctuation">))</span>
+</pre>
+</li>
+</ol>
+</div>
+<div class="section" id="novice">
+<h2>Novice</h2>
+<ol class="arabic">
+<li><p class="first">Declare a 8x8 matrix and fill it with a checkerboard pattern</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">zeros</span><span class="punctuation">((</span><span class="literal number integer">8</span><span class="punctuation">,</span><span class="literal number integer">8</span><span class="punctuation">))</span>
+<span class="name">Z</span><span class="punctuation">[</span><span class="literal number integer">1</span><span class="punctuation">::</span><span class="literal number integer">2</span><span class="punctuation">,::</span><span class="literal number integer">2</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="literal number integer">1</span>
+<span class="name">Z</span><span class="punctuation">[::</span><span class="literal number integer">2</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">::</span><span class="literal number integer">2</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="literal number integer">1</span>
+</pre>
+</li>
+<li><p class="first">Declare a 10x10 array with random values and find the minimum and maximum values</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">random</span><span class="operator">.</span><span class="name">random</span><span class="punctuation">((</span><span class="literal number integer">10</span><span class="punctuation">,</span><span class="literal number integer">10</span><span class="punctuation">,</span><span class="literal number integer">10</span><span class="punctuation">))</span>
+<span class="name">Zmin</span><span class="punctuation">,</span> <span class="name">Zmax</span> <span class="operator">=</span> <span class="name">Z</span><span class="operator">.</span><span class="name">min</span><span class="punctuation">(),</span> <span class="name">Z</span><span class="operator">.</span><span class="name">max</span><span class="punctuation">()</span>
+</pre>
+</li>
+<li><p class="first">Create a checkerboard 8x8 matrix using the tile function</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">tile</span><span class="punctuation">(</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([[</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">],[</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">0</span><span class="punctuation">]]),</span> <span class="punctuation">(</span><span class="literal number integer">4</span><span class="punctuation">,</span><span class="literal number integer">4</span><span class="punctuation">))</span>
+</pre>
+</li>
+<li><p class="first">Normalize a 5x5 random matrix (between 0 and 1)</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">random</span><span class="operator">.</span><span class="name">random</span><span class="punctuation">((</span><span class="literal number integer">5</span><span class="punctuation">,</span><span class="literal number integer">5</span><span class="punctuation">))</span>
+<span class="name">Zmax</span><span class="punctuation">,</span><span class="name">Zmin</span> <span class="operator">=</span> <span class="name">Z</span><span class="operator">.</span><span class="name">max</span><span class="punctuation">(),</span> <span class="name">Z</span><span class="operator">.</span><span class="name">min</span><span class="punctuation">()</span>
+<span class="name">Z</span> <span class="operator">=</span> <span class="punctuation">(</span><span class="name">Z</span> <span class="operator">-</span> <span class="name">Zmin</span><span class="punctuation">)</span><span class="operator">/</span><span class="punctuation">(</span><span class="name">Zmax</span> <span class="operator">-</span> <span class="name">Zmin</span><span class="punctuation">)</span>
+</pre>
+</li>
+</ol>
+<div class="admonition-hint admonition">
+<p class="first admonition-title">Hint</p>
+<p class="last">See the <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/routines.linalg.html">linear algebra documentation</a></p>
+</div>
+<ol class="arabic" start="5">
+<li><p class="first">Multiply a 5x3 matrix by a 3x2 matrix (real matrix product)</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">dot</span><span class="punctuation">(</span><span class="name">np</span><span class="operator">.</span><span class="name">ones</span><span class="punctuation">((</span><span class="literal number integer">5</span><span class="punctuation">,</span><span class="literal number integer">3</span><span class="punctuation">)),</span> <span class="name">np</span><span class="operator">.</span><span class="name">ones</span><span class="punctuation">((</span><span class="literal number integer">3</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">)))</span>
+</pre>
+</li>
+<li><p class="first">Create a 10x10 matrix with row values ranging from 0 to 9</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">zeros</span><span class="punctuation">((</span><span class="literal number integer">10</span><span class="punctuation">,</span><span class="literal number integer">10</span><span class="punctuation">))</span>
+<span class="name">Z</span> <span class="operator">+=</span> <span class="name">np</span><span class="operator">.</span><span class="name">arange</span><span class="punctuation">(</span><span class="literal number integer">10</span><span class="punctuation">)</span>
+</pre>
+</li>
+<li><p class="first">Create a vector of size 1000 with values ranging from 0 to 1, both excluded</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">random</span><span class="operator">.</span><span class="name">linspace</span><span class="punctuation">(</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">1002</span><span class="punctuation">,</span><span class="name">endpoint</span><span class="operator">=</span><span class="name builtin pseudo">True</span><span class="punctuation">)[</span><span class="literal number integer">1</span><span class="punctuation">:</span><span class="operator">-</span><span class="literal number integer">1</span><span class="punctuation">]</span>
+</pre>
+</li>
+<li><p class="first">Create a random vector of size 100 and sort it</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">random</span><span class="operator">.</span><span class="name">random</span><span class="punctuation">(</span><span class="literal number integer">100</span><span class="punctuation">)</span>
+<span class="name">Z</span><span class="operator">.</span><span class="name">sort</span><span class="punctuation">()</span>
+</pre>
+</li>
+<li><p class="first">Consider two random matrices A anb B, check if they are equal.</p>
+<pre class="code python solution literal-block">
+<span class="name">A</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">random</span><span class="operator">.</span><span class="name">randint</span><span class="punctuation">(</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">,(</span><span class="literal number integer">2</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">))</span>
+<span class="name">B</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">random</span><span class="operator">.</span><span class="name">randint</span><span class="punctuation">(</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">,(</span><span class="literal number integer">2</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">))</span>
+<span class="name">equal</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">allclose</span><span class="punctuation">(</span><span class="name">A</span><span class="punctuation">,</span><span class="name">B</span><span class="punctuation">)</span>
+</pre>
+</li>
+<li><p class="first">Create a random vector of size 1000 and find the mean value</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">random</span><span class="operator">.</span><span class="name">random</span><span class="punctuation">(</span><span class="literal number integer">1000</span><span class="punctuation">)</span>
+<span class="name">m</span> <span class="operator">=</span> <span class="name">Z</span><span class="operator">.</span><span class="name">mean</span><span class="punctuation">()</span>
+</pre>
+</li>
+</ol>
+</div>
+<div class="section" id="apprentice">
+<h2>Apprentice</h2>
+<ol class="arabic">
+<li><p class="first">Consider a random 100x2 matrix representing cartesian coordinates, convert
+them to polar coordinates</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">random</span><span class="operator">.</span><span class="name">random</span><span class="punctuation">((</span><span class="literal number integer">100</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">))</span>
+<span class="name">X</span><span class="punctuation">,</span><span class="name">Y</span> <span class="operator">=</span> <span class="name">Z</span><span class="punctuation">[:,</span><span class="literal number integer">0</span><span class="punctuation">],</span> <span class="name">Z</span><span class="punctuation">[:,</span><span class="literal number integer">1</span><span class="punctuation">]</span>
+<span class="name">R</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">sqrt</span><span class="punctuation">(</span><span class="name">X</span><span class="operator">**</span><span class="literal number integer">2</span><span class="operator">+</span><span class="name">Y</span><span class="operator">**</span><span class="literal number integer">2</span><span class="punctuation">)</span>
+<span class="name">T</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">arctan2</span><span class="punctuation">(</span><span class="name">Y</span><span class="punctuation">,</span><span class="name">X</span><span class="punctuation">)</span>
+</pre>
+</li>
+<li><p class="first">Create random vector of size 100 and replace the maximum value by 0</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">random</span><span class="operator">.</span><span class="name">random</span><span class="punctuation">(</span><span class="literal number integer">100</span><span class="punctuation">)</span>
+<span class="name">Z</span><span class="punctuation">[</span><span class="name">Z</span><span class="operator">.</span><span class="name">argmax</span><span class="punctuation">()]</span> <span class="operator">=</span> <span class="literal number integer">0</span>
+</pre>
+</li>
+</ol>
+<div class="admonition-hint admonition">
+<p class="first admonition-title">Hint</p>
+<p class="last">See the documentation on <a class="reference external" href="http://docs.scipy.org/doc/numpy/user/basics.rec.html">Structured arrays</a></p>
+</div>
+<ol class="arabic" start="3">
+<li><p class="first">Declare a structured array with <tt class="docutils literal">x</tt> and <tt class="docutils literal">y</tt> coordinates covering the
+[0,1]x[0,1] area.</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">zeros</span><span class="punctuation">((</span><span class="literal number integer">10</span><span class="punctuation">,</span><span class="literal number integer">10</span><span class="punctuation">),</span> <span class="punctuation">[(</span><span class="literal string">'x'</span><span class="punctuation">,</span><span class="name builtin">float</span><span class="punctuation">),(</span><span class="literal string">'y'</span><span class="punctuation">,</span><span class="name builtin">float</span><span class="punctuation">)])</span>
+<span class="name">Z</span><span class="punctuation">[</span><span class="literal string">'x'</span><span class="punctuation">],</span> <span class="name">Z</span><span class="punctuation">[</span><span class="literal string">'y'</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">meshgrid</span><span class="punctuation">(</span><span class="name">np</span><span class="operator">.</span><span class="name">linspace</span><span class="punctuation">(</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">10</span><span class="punctuation">),</span>
+                             <span class="name">np</span><span class="operator">.</span><span class="name">linspace</span><span class="punctuation">(</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">10</span><span class="punctuation">))</span>
+</pre>
+</li>
+</ol>
+<div class="admonition-hint admonition">
+<p class="first admonition-title">Hint</p>
+<p class="last">Have a look at <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/routines.dtype.html">Data type routines</a></p>
+</div>
+<ol class="arabic" start="4">
+<li><p class="first">Print the minimum and maximum representable value for each numpy scalar type</p>
+<pre class="code python solution literal-block">
+<span class="keyword">for</span> <span class="name">dtype</span> <span class="operator word">in</span> <span class="punctuation">[</span><span class="name">np</span><span class="operator">.</span><span class="name">int8</span><span class="punctuation">,</span> <span class="name">np</span><span class="operator">.</span><span class="name">int32</span><span class="punctuation">,</span> <span class="name">np</span><span class="operator">.</span><span class="name">int64</span><span class="punctuation">]:</span>
+   <span class="keyword">print</span> <span class="name">np</span><span class="operator">.</span><span class="name">iinfo</span><span class="punctuation">(</span><span class="name">dtype</span><span class="punctuation">)</span><span class="operator">.</span><span class="name">min</span>
+   <span class="keyword">print</span> <span class="name">np</span><span class="operator">.</span><span class="name">iinfo</span><span class="punctuation">(</span><span class="name">dtype</span><span class="punctuation">)</span><span class="operator">.</span><span class="name">max</span>
+<span class="keyword">for</span> <span class="name">dtype</span> <span class="operator word">in</span> <span class="punctuation">[</span><span class="name">np</span><span class="operator">.</span><span class="name">float32</span><span class="punctuation">,</span> <span class="name">np</span><span class="operator">.</span><span class="name">float64</span><span class="punctuation">]:</span>
+   <span class="keyword">print</span> <span class="name">np</span><span class="operator">.</span><span class="name">finfo</span><span class="punctuation">(</span><span class="name">dtype</span><span class="punctuation">)</span><span class="operator">.</span><span class="name">min</span>
+   <span class="keyword">print</span> <span class="name">np</span><span class="operator">.</span><span class="name">finfo</span><span class="punctuation">(</span><span class="name">dtype</span><span class="punctuation">)</span><span class="operator">.</span><span class="name">max</span>
+   <span class="keyword">print</span> <span class="name">np</span><span class="operator">.</span><span class="name">finfo</span><span class="punctuation">(</span><span class="name">dtype</span><span class="punctuation">)</span><span class="operator">.</span><span class="name">eps</span>
+</pre>
+</li>
+<li><p class="first">Create a structured array representing a position (x,y) and a color (r,g,b)</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">zeros</span><span class="punctuation">(</span><span class="literal number integer">10</span><span class="punctuation">,</span> <span class="punctuation">[</span> <span class="punctuation">(</span><span class="literal string">'position'</span><span class="punctuation">,</span> <span class="punctuation">[</span> <span class="punctuation">(</span><span class="literal string">'x'</span><span class="punctuation">,</span> <span class="name builtin">float</span><span class="punctuation">,</span> <span class="literal number integer">1</span><span class="punctuation">),</span>
+                                  <span class="punctuation">(</span><span class="literal string">'y'</span><span class="punctuation">,</span> <span class="name builtin">float</span><span class="punctuation">,</span> <span class="literal number integer">1</span><span class="punctuation">)]),</span>
+                   <span class="punctuation">(</span><span class="literal string">'color'</span><span class="punctuation">,</span>    <span class="punctuation">[</span> <span class="punctuation">(</span><span class="literal string">'r'</span><span class="punctuation">,</span> <span class="name builtin">float</span><span class="punctuation">,</span> <span class="literal number integer">1</span><span class="punctuation">),</span>
+                                  <span class="punctuation">(</span><span class="literal string">'g'</span><span class="punctuation">,</span> <span class="name builtin">float</span><span class="punctuation">,</span> <span class="literal number integer">1</span><span class="punctuation">),</span>
+                                  <span class="punctuation">(</span><span class="literal string">'b'</span><span class="punctuation">,</span> <span class="name builtin">float</span><span class="punctuation">,</span> <span class="literal number integer">1</span><span class="punctuation">)])])</span>
+</pre>
+</li>
+<li><p class="first">Consider a random vector with shape (100,2) representing coordinates, find
+point by point distances</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">random</span><span class="operator">.</span><span class="name">random</span><span class="punctuation">((</span><span class="literal number integer">10</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">))</span>
+<span class="name">X</span><span class="punctuation">,</span><span class="name">Y</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">atleast_2d</span><span class="punctuation">(</span><span class="name">Z</span><span class="punctuation">[:,</span><span class="literal number integer">0</span><span class="punctuation">]),</span> <span class="name">np</span><span class="operator">.</span><span class="name">atleast_2d</span><span class="punctuation">(</span><span class="name">Z</span><span class="punctuation">[:,</span><span class="literal number integer">1</span><span class="punctuation">])</span>
+<span class="name">D</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">sqrt</span><span class="punctuation">(</span> <span class="punctuation">(</span><span class="name">X</span><span class="operator">-</span><span class="name">X</span><span class="operator">.</span><span class="name">T</span><span class="punctuation">)</span><span class="operator">**</span><span class="literal number integer">2</span> <span class="operator">+</span> <span class="punctuation">(</span><span class="name">Y</span><span class="operator">-</span><span class="name">Y</span><span class="operator">.</span><span class="name">T</span><span class="punctuation">)</span><span class="operator">**</span><span class="literal number integer">2</span><span class="punctuation">)</span>
+</pre>
+</li>
+<li><p class="first">Generate a generic 2D Gaussian-like array</p>
+<pre class="code python solution literal-block">
+<span class="name">X</span><span class="punctuation">,</span> <span class="name">Y</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">meshgrid</span><span class="punctuation">(</span><span class="name">np</span><span class="operator">.</span><span class="name">linspace</span><span class="punctuation">(</span><span class="operator">-</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">100</span><span class="punctuation">),</span> <span class="name">np</span><span class="operator">.</span><span class="name">linspace</span><span class="punctuation">(</span><span class="operator">-</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">100</span><span class="punctuation">))</span>
+<span class="name">D</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">sqrt</span><span class="punctuation">(</span><span class="name">X</span><span class="operator">*</span><span class="name">X</span><span class="operator">+</span><span class="name">Y</span><span class="operator">*</span><span class="name">Y</span><span class="punctuation">)</span>
+<span class="name">sigma</span><span class="punctuation">,</span> <span class="name">mu</span> <span class="operator">=</span> <span class="literal number float">1.0</span><span class="punctuation">,</span> <span class="literal number float">0.0</span>
+<span class="name">G</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">exp</span><span class="punctuation">(</span><span class="operator">-</span><span class="punctuation">(</span> <span class="punctuation">(</span><span class="name">D</span><span class="operator">-</span><span class="name">mu</span><span class="punctuation">)</span><span class="operator">**</span><span class="literal number integer">2</span> <span class="operator">/</span> <span class="punctuation">(</span> <span class="literal number float">2.0</span> <span class="operator">*</span> <span class="name">sigma</span><span class="operator">**</span><span class="literal number integer">2</span> <span class="punctuation">)</span> <span class="punctuation">)</span> <span class="punctuation">)</span>
+</pre>
+</li>
+<li><p class="first">Consider the vector [1, 2, 3, 4, 5], how to build a new vector with 3
+consecutive zeros interleaved between each value ?</p>
+<pre class="code python solution literal-block">
+<span class="name">Z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">,</span><span class="literal number integer">3</span><span class="punctuation">,</span><span class="literal number integer">4</span><span class="punctuation">,</span><span class="literal number integer">5</span><span class="punctuation">])</span>
+<span class="name">nz</span> <span class="operator">=</span> <span class="literal number integer">3</span>
+<span class="name">Z0</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">zeros</span><span class="punctuation">(</span><span class="name builtin">len</span><span class="punctuation">(</span><span class="name">Z</span><span class="punctuation">)</span> <span class="operator">+</span> <span class="punctuation">(</span><span class="name builtin">len</span><span class="punctuation">(</span><span class="name">Z</span><span class="punctuation">)</span><span class="operator">-</span><span class="literal number integer">1</span><span class="punctuation">)</span><span class="operator">*</span><span class="punctuation">(</span><span class="name">nz</span><span class="punctuation">))</span>
+<span class="name">Z0</span><span class="punctuation">[::</span><span class="name">nz</span><span class="operator">+</span><span class="literal number integer">1</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="name">Z</span>
+</pre>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="beyond-this-tutorial">
+<h1><a class="toc-backref" href="#id5">Beyond this tutorial</a></h1>
+<p>Numpy benefits from extensive documentation as well as a large community of
+users and developpers. Here are some links of interest:</p>
+<div class="section" id="other-tutorials">
+<h2>Other Tutorials</h2>
+<ul>
+<li><p class="first"><a class="reference external" href="http://scipy-lectures.github.io">The SciPy Lecture Notes</a></p>
+<p>The SciPy Lecture notes offers a teaching material on the scientific Python
+ecosystem as well as quick introduction to central tools and techniques. The
+different chapters each correspond to a 1 to 2 hours course with increasing
+level of expertise, from beginner to expert.</p>
+</li>
+<li><p class="first"><a class="reference external" href="http://www.scipy.org/Tentative_NumPy_Tutorial">A Tentative numpy tutorial</a></p>
+<ul class="simple">
+<li>Prerequisites</li>
+<li>The Basics</li>
+<li>Shape Manipulation</li>
+<li>Copies and Views</li>
+<li>Less Basic</li>
+<li>Fancy indexing and index tricks</li>
+<li>Linear Algebra</li>
+<li>Tricks and Tips</li>
+</ul>
+</li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<ul>
+<li><p class="first"><a class="reference external" href="http://mentat.za.net/numpy/numpy_advanced_slides/">Numpy MedKit</a></p>
+<blockquote>
+<p>A first-aid kit for the numerically adventurous by Stéfan van der Walt.</p>
+</blockquote>
+</li>
+<li><p class="first"><a class="reference external" href="http://www.engr.ucsb.edu/~shell/che210d/numpy.pdf">An introduction to Numpy and Scipy</a></p>
+<p>A short introduction to Numpy and Scipy by M. Scott Shell.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="numpy-documentation">
+<h2>Numpy documentation</h2>
+<ul>
+<li><p class="first"><a class="reference external" href="http://docs.scipy.org/doc/numpy/user/">User guide</a></p>
+<blockquote>
+<p>This guide is intended as an introductory overview of NumPy and explains how
+to install and make use of the most important features of NumPy.</p>
+</blockquote>
+</li>
+<li><p class="first"><a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/index.html#reference">Numpy reference</a></p>
+<p>This reference manual details functions, modules, and objects included in
+Numpy, describing what they are and what they do.</p>
+</li>
+<li><p class="first"><a class="reference external" href="http://www.scipy.org/FAQ">FAQ</a></p>
+<blockquote>
+<ul class="simple">
+<li>General questions about numpy</li>
+<li>General questions about SciPy</li>
+<li>Basic SciPy/numpy usage</li>
+<li>Advanced NumPy/SciPy usage</li>
+<li>NumPy/SciPy installation</li>
+<li>Miscellaneous Issues</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="code-documentation">
+<h2>Code documentation</h2>
+<p>The code is fairly well documented and you can quickly access a specific
+command from within a python session:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; help(np.ones)
+Help on function ones in module numpy.core.numeric:
+
+ones(shape, dtype=None, order='C')
+    Return a new array of given shape and type, filled with ones.
+
+    Please refer to the documentation for `zeros` for further details.
+
+    See Also
+    --------
+    zeros, ones_like
+
+    Examples
+    --------
+    &gt;&gt;&gt; np.ones(5)
+    array([ 1.,  1.,  1.,  1.,  1.])
+
+    &gt;&gt;&gt; np.ones((5,), dtype=np.int)
+    array([1, 1, 1, 1, 1])
+
+    &gt;&gt;&gt; np.ones((2, 1))
+    array([[ 1.],
+           [ 1.]])
+
+    &gt;&gt;&gt; s = (2,2)
+    &gt;&gt;&gt; np.ones(s)
+    array([[ 1.,  1.],
+           [ 1.,  1.]])
+</pre>
+</div>
+<div class="section" id="mailing-lists">
+<h2>Mailing lists</h2>
+<p>Finally, there is a <a class="reference external" href="https://lists.sourceforge.net/lists/listinfo/numpy-discussion">mailing list</a> where you can
+ask for help.</p>
+</div>
+</div>
+<div class="section" id="quick-references">
+<h1><a class="toc-backref" href="#id6">Quick references</a></h1>
+<div class="section" id="data-type">
+<h2>Data type</h2>
+<table border="1" class="compact-table docutils">
+<colgroup>
+<col width="13%" />
+<col width="87%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Data type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>bool</td>
+<td>Boolean (True or False) stored as a byte</td>
+</tr>
+<tr><td>int</td>
+<td>Platform integer (normally either int32 or int64)</td>
+</tr>
+<tr><td>int8</td>
+<td>Byte (-128 to 127)</td>
+</tr>
+<tr><td>int16</td>
+<td>Integer (-32768 to 32767)</td>
+</tr>
+<tr><td>int32</td>
+<td>Integer (-2147483648 to 2147483647)</td>
+</tr>
+<tr><td>int64</td>
+<td>Integer (9223372036854775808 to 9223372036854775807)</td>
+</tr>
+<tr><td>uint8</td>
+<td>Unsigned integer (0 to 255)</td>
+</tr>
+<tr><td>uint16</td>
+<td>Unsigned integer (0 to 65535)</td>
+</tr>
+<tr><td>uint32</td>
+<td>Unsigned integer (0 to 4294967295)</td>
+</tr>
+<tr><td>uint64</td>
+<td>Unsigned integer (0 to 18446744073709551615)</td>
+</tr>
+<tr><td>float</td>
+<td>Shorthand for float64.</td>
+</tr>
+<tr><td>float16</td>
+<td>Half precision float: sign bit, 5 bits exponent, 10 bits mantissa</td>
+</tr>
+<tr><td>float32</td>
+<td>Single precision float: sign bit, 8 bits exponent, 23 bits mantissa</td>
+</tr>
+<tr><td>float64</td>
+<td>Double precision float: sign bit, 11 bits exponent, 52 bits mantissa</td>
+</tr>
+<tr><td>complex</td>
+<td>Shorthand for complex128.</td>
+</tr>
+<tr><td>complex64</td>
+<td>Complex number, represented by two 32-bit floats</td>
+</tr>
+<tr><td>complex128</td>
+<td>Complex number, represented by two 64-bit floats</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="creation">
+<h2>Creation</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="22%" />
+<col width="11%" />
+<col width="22%" />
+<col width="22%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Code</th>
+<th class="head">Result</th>
+<th class="head">&nbsp;</th>
+<th class="head">Code</th>
+<th class="head">Result</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><pre class="first last literal-block">
+Z = zeros(9)
+</pre>
+</td>
+<td><img alt="figures/create-zeros-1.png" class="first last" src="figures/create-zeros-1.png" />
+</td>
+<td>&nbsp;</td>
+<td><pre class="first last literal-block">
+Z = zeros((5,9))
+</pre>
+</td>
+<td><img alt="figures/create-zeros-2.png" class="first last" src="figures/create-zeros-2.png" />
+</td>
+</tr>
+<tr><td><pre class="first last literal-block">
+Z = ones(9)
+</pre>
+</td>
+<td><img alt="figures/create-ones-1.png" class="first last" src="figures/create-ones-1.png" />
+</td>
+<td>&nbsp;</td>
+<td><pre class="first last literal-block">
+Z = ones((5,9))
+</pre>
+</td>
+<td><img alt="figures/create-ones-2.png" class="first last" src="figures/create-ones-2.png" />
+</td>
+</tr>
+<tr><td><pre class="first last literal-block">
+Z = array(
+ [0,0,0,0,0,0,0,0,0] )
+</pre>
+</td>
+<td><img alt="figures/create-list-1.png" class="first last" src="figures/create-list-1.png" />
+</td>
+<td>&nbsp;</td>
+<td><pre class="first last literal-block">
+Z = array(
+ [[0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0]])
+</pre>
+</td>
+<td><img alt="figures/create-list-2.png" class="first last" src="figures/create-list-2.png" />
+</td>
+</tr>
+<tr><td><pre class="first last literal-block">
+Z = arange(9)
+</pre>
+</td>
+<td><img alt="figures/create-arange-1.png" class="first last" src="figures/create-arange-1.png" />
+</td>
+<td>&nbsp;</td>
+<td><pre class="first last literal-block">
+Z = arange(5*9).reshape(5,9)
+</pre>
+</td>
+<td><img alt="figures/create-arange-2.png" class="first last" src="figures/create-arange-2.png" />
+</td>
+</tr>
+<tr><td><pre class="first last literal-block">
+Z = random.uniform(0,1,9)
+</pre>
+</td>
+<td><img alt="figures/create-uniform-1.png" class="first last" src="figures/create-uniform-1.png" />
+</td>
+<td>&nbsp;</td>
+<td><pre class="first last literal-block">
+Z = random.uniform(0,1,(5,9))
+</pre>
+</td>
+<td><img alt="figures/create-uniform-2.png" class="first last" src="figures/create-uniform-2.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="reshaping">
+<h2>Reshaping</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="33%" />
+<col width="17%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Code</th>
+<th class="head">Result</th>
+<th class="head">Code</th>
+<th class="head">Result</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><pre class="first last literal-block">
+Z[2,2] = 1
+</pre>
+</td>
+<td><img alt="figures/reshape-Z.png" class="first last" src="figures/reshape-Z.png" />
+</td>
+<td><pre class="first last literal-block">
+Z = Z.reshape(1,12)
+</pre>
+</td>
+<td><img alt="figures/reshape-Z-reshape(1,12).png" class="first last" src="figures/reshape-Z-reshape(1,12).png" />
+</td>
+</tr>
+<tr><td><pre class="first last literal-block">
+Z = Z.reshape(4,3)
+</pre>
+</td>
+<td><img alt="figures/reshape-Z-reshape(4,3).png" class="first last" src="figures/reshape-Z-reshape(4,3).png" />
+</td>
+<td rowspan="3"><pre class="first last literal-block">
+Z = Z.reshape(12,1)
+</pre>
+</td>
+<td rowspan="3"><img alt="figures/reshape-Z-reshape(12,1).png" class="first last" src="figures/reshape-Z-reshape(12,1).png" />
+</td>
+</tr>
+<tr><td><pre class="first last literal-block">
+Z = Z.reshape(6,2)
+</pre>
+</td>
+<td><img alt="figures/reshape-Z-reshape(6,2).png" class="first last" src="figures/reshape-Z-reshape(6,2).png" />
+</td>
+</tr>
+<tr><td><pre class="first last literal-block">
+Z = Z.reshape(2,6)
+</pre>
+</td>
+<td><img alt="figures/reshape-Z-reshape(2,6).png" class="first last" src="figures/reshape-Z-reshape(2,6).png" />
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="slicing">
+<h2>Slicing</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="22%" />
+<col width="11%" />
+<col width="22%" />
+<col width="22%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Code</th>
+<th class="head">Result</th>
+<th class="head">&nbsp;</th>
+<th class="head">Code</th>
+<th class="head">Result</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><pre class="first last literal-block">
+Z
+</pre>
+</td>
+<td><img alt="figures/slice-Z.png" class="first last" src="figures/slice-Z.png" />
+</td>
+<td>&nbsp;</td>
+<td><pre class="first last literal-block">
+Z[...] = 1
+</pre>
+</td>
+<td><img alt="figures/slice-Z[...].png" class="first last" src="figures/slice-Z[...].png" />
+</td>
+</tr>
+<tr><td><pre class="first last literal-block">
+Z[1,1] = 1
+</pre>
+</td>
+<td><img alt="figures/slice-Z[1,1].png" class="first last" src="figures/slice-Z[1,1].png" />
+</td>
+<td>&nbsp;</td>
+<td><pre class="first last literal-block">
+Z[:,0] = 1
+</pre>
+</td>
+<td><img alt="figures/slice-Z[:,0].png" class="first last" src="figures/slice-Z[:,0].png" />
+</td>
+</tr>
+<tr><td><pre class="first last literal-block">
+Z[0,:] = 1
+</pre>
+</td>
+<td><img alt="figures/slice-Z[0,:].png" class="first last" src="figures/slice-Z[0,:].png" />
+</td>
+<td>&nbsp;</td>
+<td><pre class="first last literal-block">
+Z[2:,2:] = 1
+</pre>
+</td>
+<td><img alt="figures/slice-Z[2:,2:].png" class="first last" src="figures/slice-Z[2:,2:].png" />
+</td>
+</tr>
+<tr><td><pre class="first last literal-block">
+Z[:,::2] = 1
+</pre>
+</td>
+<td><img alt="figures/slice-Z[:,::2].png" class="first last" src="figures/slice-Z[:,::2].png" />
+</td>
+<td>&nbsp;</td>
+<td><pre class="first last literal-block">
+Z[::2,:] = 1
+</pre>
+</td>
+<td><img alt="figures/slice-Z[::2,:].png" class="first last" src="figures/slice-Z[::2,:].png" />
+</td>
+</tr>
+<tr><td><pre class="first last literal-block">
+Z[:-2,:-2] = 1
+</pre>
+</td>
+<td><img alt="figures/slice-Z[:-2,:-2].png" class="first last" src="figures/slice-Z[:-2,:-2].png" />
+</td>
+<td>&nbsp;</td>
+<td><pre class="first last literal-block">
+Z[2:4,2:4] = 1
+</pre>
+</td>
+<td><img alt="figures/slice-Z[2:4,2:4].png" class="first last" src="figures/slice-Z[2:4,2:4].png" />
+</td>
+</tr>
+<tr><td><pre class="first last literal-block">
+Z[::2,::2] = 1
+</pre>
+</td>
+<td><img alt="figures/slice-Z[::2,::2].png" class="first last" src="figures/slice-Z[::2,::2].png" />
+</td>
+<td>&nbsp;</td>
+<td><pre class="first last literal-block">
+Z[3::2,3::2] = 1
+</pre>
+</td>
+<td><img alt="figures/slice-Z[3::2,3::2].png" class="first last" src="figures/slice-Z[3::2,3::2].png" />
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="broadcasting">
+<h2>Broadcasting</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="3%" />
+<col width="16%" />
+<col width="8%" />
+<col width="16%" />
+<col width="3%" />
+<col width="16%" />
+<col width="8%" />
+<col width="16%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><img alt="figures/broadcast-1.1.png" class="first last" src="figures/broadcast-1.1.png" />
+</td>
+<td><strong>+</strong></td>
+<td><img alt="figures/broadcast-1.2.png" class="first last" src="figures/broadcast-1.2.png" />
+</td>
+<td><strong>→</strong></td>
+<td><img alt="figures/broadcast-1.1.png" class="first last" src="figures/broadcast-1.1.png" />
+</td>
+<td><strong>+</strong></td>
+<td><img alt="figures/broadcast-1.3.png" class="first last" src="figures/broadcast-1.3.png" />
+</td>
+<td><strong>=</strong></td>
+<td><img alt="figures/broadcast-1.4.png" class="first last" src="figures/broadcast-1.4.png" />
+</td>
+</tr>
+<tr><td><img alt="figures/broadcast-2.1.png" class="first last" src="figures/broadcast-2.1.png" />
+</td>
+<td><strong>+</strong></td>
+<td><img alt="figures/broadcast-2.2.png" class="first last" src="figures/broadcast-2.2.png" />
+</td>
+<td><strong>→</strong></td>
+<td><img alt="figures/broadcast-2.1.png" class="first last" src="figures/broadcast-2.1.png" />
+</td>
+<td><strong>+</strong></td>
+<td><img alt="figures/broadcast-2.3.png" class="first last" src="figures/broadcast-2.3.png" />
+</td>
+<td><strong>=</strong></td>
+<td><img alt="figures/broadcast-2.4.png" class="first last" src="figures/broadcast-2.4.png" />
+</td>
+</tr>
+<tr><td><img alt="figures/broadcast-3.1.png" class="first last" src="figures/broadcast-3.1.png" />
+</td>
+<td><strong>+</strong></td>
+<td><img alt="figures/broadcast-3.2.png" class="first last" src="figures/broadcast-3.2.png" />
+</td>
+<td><strong>→</strong></td>
+<td><img alt="figures/broadcast-3.1.png" class="first last" src="figures/broadcast-3.1.png" />
+</td>
+<td><strong>+</strong></td>
+<td><img alt="figures/broadcast-3.3.png" class="first last" src="figures/broadcast-3.3.png" />
+</td>
+<td><strong>=</strong></td>
+<td><img alt="figures/broadcast-3.4.png" class="first last" src="figures/broadcast-3.4.png" />
+</td>
+</tr>
+<tr><td><img alt="figures/broadcast-4.1.png" class="first last" src="figures/broadcast-4.1.png" />
+</td>
+<td><strong>+</strong></td>
+<td><img alt="figures/broadcast-4.2.png" class="first last" src="figures/broadcast-4.2.png" />
+</td>
+<td><strong>→</strong></td>
+<td><img alt="figures/broadcast-4.3.png" class="first last" src="figures/broadcast-4.3.png" />
+</td>
+<td><strong>+</strong></td>
+<td><img alt="figures/broadcast-4.4.png" class="first last" src="figures/broadcast-4.4.png" />
+</td>
+<td><strong>=</strong></td>
+<td><img alt="figures/broadcast-4.5.png" class="first last" src="figures/broadcast-4.5.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="operations">
+<h2>Operations</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="36%" />
+<col width="36%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Code</th>
+<th class="head">Before</th>
+<th class="head">After</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><pre class="first last literal-block">
+Z = np.where(Z &gt; 0.5, 0, 1)
+</pre>
+</td>
+<td><img alt="figures/ops-where-before.png" class="first last" src="figures/ops-where-before.png" />
+</td>
+<td><img alt="figures/ops-where-after.png" class="first last" src="figures/ops-where-after.png" />
+</td>
+</tr>
+<tr><td><pre class="first last literal-block">
+Z = np.maximum(Z, 0.5)
+</pre>
+</td>
+<td><img alt="figures/ops-maximum-before.png" class="first last" src="figures/ops-maximum-before.png" />
+</td>
+<td><img alt="figures/ops-maximum-after.png" class="first last" src="figures/ops-maximum-after.png" />
+</td>
+</tr>
+<tr><td><pre class="first last literal-block">
+Z = np.minimum(Z, 0.5)
+</pre>
+</td>
+<td><img alt="figures/ops-minimum-before.png" class="first last" src="figures/ops-minimum-before.png" />
+</td>
+<td><img alt="figures/ops-minimum-after.png" class="first last" src="figures/ops-minimum-after.png" />
+</td>
+</tr>
+<tr><td><pre class="first last literal-block">
+Z = np.sum(Z, axis=0)
+</pre>
+</td>
+<td><img alt="figures/ops-sum-before.png" class="first last" src="figures/ops-sum-before.png" />
+</td>
+<td><img alt="figures/ops-sum-after.png" class="first last" src="figures/ops-sum-after.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</body>
+</html>
