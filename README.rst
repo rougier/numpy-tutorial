@@ -133,7 +133,7 @@ The way of python
 .. note:: 
 
    We could have used the more efficient `python array interface
-   <http://docs.python.org/2/library/array.html>`_ but people may be more
+   <https://docs.python.org/3/library/array.html>`_ but people may be more
    familiar with the list object.
 
 
