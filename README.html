@@ -144,7 +144,7 @@ move one step diagonally in 4 iterations as illustrated below:</p>
 <h2>The way of python</h2>
 <div class="note">
 <p class="first admonition-title">Note</p>
-<p class="last">We could have used the more efficient <a class="reference external" href="http://docs.python.org/2/library/array.html">python array interface</a> but people may be more
+<p class="last">We could have used the more efficient <a class="reference external" href="https://docs.python.org/3/library/array.html">python array interface</a> but people may be more
 familiar with the list object.</p>
 </div>
 <p>In pure python, we can code the Game of Life using a list of lists representing
@@ -231,18 +231,18 @@ cells. This can be done very easily with:</p>
 choose one for us. Since all elements are integers, numpy will then choose an
 integer data type. This can be easily checked using:</p>
 <pre class="literal-block">
-&gt;&gt;&gt; print Z.dtype
+&gt;&gt;&gt; print(Z.dtype)
 int64
 </pre>
 <p>We can also check the shape of the array to make sure it is 6x6:</p>
 <pre class="literal-block">
-&gt;&gt;&gt; print Z.shape
+&gt;&gt;&gt; print(Z.shape)
 (6, 6)
 </pre>
 <p>Each element of <tt class="docutils literal">Z</tt> can be accessed using a <tt class="docutils literal">row</tt> and a <tt class="docutils literal">column</tt>
 index (in that order):</p>
 <pre class="literal-block">
-&gt;&gt;&gt; print Z[0,5]
+&gt;&gt;&gt; print(Z[0,5])
 0
 </pre>
 <div class="note">
@@ -253,7 +253,7 @@ is very powerful tool for vectorized computation.</p>
 <p>But even better, we can also access a subpart of the array using the slice
 notation:</p>
 <pre class="literal-block">
-&gt;&gt;&gt; print Z[1:5,1:5]
+&gt;&gt;&gt; print(Z[1:5,1:5])
 [[0 0 1 0]
  [1 0 1 0]
  [0 1 1 0]
@@ -267,14 +267,14 @@ have immediate impact on <tt class="docutils literal">Z</tt>:</p>
 <pre class="doctest-block">
 &gt;&gt;&gt; A = Z[1:5,1:5]
 &gt;&gt;&gt; A[0,0] = 9
-&gt;&gt;&gt; print A
+&gt;&gt;&gt; print(A)
 [[9 0 1 0]
  [1 0 1 0]
  [0 1 1 0]
  [0 0 0 0]]
 </pre>
 <pre class="doctest-block">
-&gt;&gt;&gt; print Z
+&gt;&gt;&gt; print(Z)
 [[0 0 0 0 0 0]
  [0 9 0 1 0 0]
  [0 1 0 1 0 0]
@@ -289,9 +289,9 @@ with such simple arrays, but things can become much more complex (we'll see
 that later). If in doubt, you can check easily if an array is part of another
 one:</p>
 <pre class="literal-block">
-&gt;&gt;&gt; print Z.base is None
+&gt;&gt;&gt; print(Z.base is None)
 True
-&gt;&gt;&gt; print A.base is Z
+&gt;&gt;&gt; print(A.base is Z)
 True
 </pre>
 <div class="section" id="counting-neighbours">
@@ -310,7 +310,7 @@ is called <em>vectorization</em>.</p>
 <p>First, you need to know that you can manipulate <tt class="docutils literal">Z</tt> <em>as if</em> (and only <em>as
 if</em>) it was a regular scalar:</p>
 <pre class="literal-block">
-&gt;&gt;&gt; print 1+(2*Z+3)
+&gt;&gt;&gt; print(1+(2*Z+3))
 [[4 4 4 4 4 4]
  [4 4 4 6 4 4]
  [4 6 4 6 4 4]
@@ -336,7 +336,7 @@ the impossibility of <em>broadcasting</em> the two arrays together. <a class="re
 a very powerful feature of numpy and most of the time, it saves you a lot of
 hassle.  Let's consider for example the following code:</p>
 <pre class="literal-block">
-&gt;&gt;&gt; print Z+1
+&gt;&gt;&gt; print(Z+1)
 [[1 1 1 1 1 1]
  [1 1 1 2 1 1]
  [1 2 1 2 1 1]
@@ -457,7 +457,7 @@ to check). We then set all <tt class="docutils literal">Z</tt> values to 0 (all 
 the <tt class="docutils literal">birth</tt> and <tt class="docutils literal">survive</tt> arrays to conditionally set <tt class="docutils literal">Z</tt> values
 to 1. And we're done ! Let's test this:</p>
 <pre class="literal-block">
-&gt;&gt;&gt; print Z
+&gt;&gt;&gt; print(Z)
 [[0 0 0 0 0 0]
  [0 0 0 1 0 0]
  [0 1 0 1 0 0]
@@ -465,7 +465,7 @@ to 1. And we're done ! Let's test this:</p>
  [0 0 0 0 0 0]
  [0 0 0 0 0 0]]
 &gt;&gt;&gt; for i in range(4): iterate_2(Z)
-&gt;&gt;&gt; print Z
+&gt;&gt;&gt; print(Z)
 [[0 0 0 0 0 0]
  [0 0 0 0 0 0]
  [0 0 0 0 1 0]
@@ -562,7 +562,7 @@ single array. Numpy allows to do that with the notion of <a class="reference ext
 &gt;&gt;&gt; n = 200
 &gt;&gt;&gt; Z = np.zeros((n+2,n+2), [('U', np.double),
                              ('V', np.double)])
-&gt;&gt;&gt; print Z.dtype
+&gt;&gt;&gt; print(Z.dtype)
 [('U', '&lt;f8'), ('V', '&lt;f8')]
 </pre>
 <p>The size of the array is (n+2,n+2) since we need the borders when computing the
@@ -582,7 +582,7 @@ def laplacian(Z):
 </pre>
 <p>Finally, we can iterate the computation after havong choosed some interesting parameters:</p>
 <pre class="literal-block">
-for i in xrange(25000):
+for i in range(25000):
     Lu = laplacian(U)
     Lv = laplacian(V)
     uvv = u*v*v

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------------
 # Copyright INRIA
 # Contributors: Nicolas P. Rougier (Nicolas.Rougier@inria.fr)
@@ -79,8 +77,8 @@ Z = np.array([[0,0,0,0,0,0],
               [0,0,0,0,0,0],
               [0,0,0,0,0,0]])
 
-print Z
-print
+print(Z)
+print()
 for i in range(4): iterate_2(Z)
-print Z
+print(Z)
 

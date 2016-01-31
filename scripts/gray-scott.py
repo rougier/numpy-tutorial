@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 '''
 Reaction Diffusion : Gray-Scott model
 
@@ -56,7 +54,7 @@ im = plt.imshow(V, interpolation='bicubic', cmap=plt.cm.gray_r)
 plt.xticks([]), plt.yticks([])
 
 
-for i in xrange(25000):
+for i in range(25000):
     Lu = (                 U[0:-2,1:-1] +
           U[1:-1,0:-2] - 4*U[1:-1,1:-1] + U[1:-1,2:] +
                            U[2:  ,1:-1] )

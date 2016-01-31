@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# -----------------------------------------------------------------------------
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -18,7 +15,7 @@ def iterate(Z):
     Z[1:-1,1:-1][birth | survive] = 1
     return Z
 
-Z  = np.random.randint(0,2,(256,512)).astype(int)
+Z  = np.random.randint(0,2,(256,256)).astype(int)
 U  = np.zeros((2*128,2*128), dtype=int)
 for i in range(100):
     iterate(Z)

@@ -17,8 +17,8 @@ def compute_neighbours(Z):
 
 def show(Z):
     for l in Z[1:-1]:
-        print l[1:-1]
-    print
+        print(l[1:-1])
+    print()
 
 def iterate(Z):
     shape = len(Z), len(Z[0])

@@ -133,7 +133,7 @@ The way of python
 .. note:: 
 
    We could have used the more efficient `python array interface
-   <http://docs.python.org/2/library/array.html>`_ but people may be more
+   <https://docs.python.org/3/library/array.html>`_ but people may be more
    familiar with the list object.
 
 
@@ -231,18 +231,18 @@ choose one for us. Since all elements are integers, numpy will then choose an
 integer data type. This can be easily checked using::
 
 
-  >>> print Z.dtype
+  >>> print(Z.dtype)
   int64
 
 We can also check the shape of the array to make sure it is 6x6::
 
-  >>> print Z.shape
+  >>> print(Z.shape)
   (6, 6)
 
 Each element of ``Z`` can be accessed using a ``row`` and a ``column``
 index (in that order)::
 
-  >>> print Z[0,5]
+  >>> print(Z[0,5])
   0
 
 .. note:: 
@@ -254,7 +254,7 @@ index (in that order)::
 But even better, we can also access a subpart of the array using the slice
 notation::
 
-  >>> print Z[1:5,1:5]
+  >>> print(Z[1:5,1:5])
   [[0 0 1 0]
    [1 0 1 0]
    [0 1 1 0]
@@ -268,13 +268,13 @@ have immediate impact on ``Z``:
 
   >>> A = Z[1:5,1:5]
   >>> A[0,0] = 9
-  >>> print A
+  >>> print(A)
   [[9 0 1 0]
    [1 0 1 0]
    [0 1 1 0]
    [0 0 0 0]]
   
-  >>> print Z
+  >>> print(Z)
   [[0 0 0 0 0 0]
    [0 9 0 1 0 0]
    [0 1 0 1 0 0]
@@ -288,9 +288,9 @@ with such simple arrays, but things can become much more complex (we'll see
 that later). If in doubt, you can check easily if an array is part of another
 one::
 
-  >>> print Z.base is None
+  >>> print(Z.base is None)
   True
-  >>> print A.base is Z
+  >>> print(A.base is Z)
   True
 
 
@@ -315,7 +315,7 @@ Ok, let's start then...
 First, you need to know that you can manipulate ``Z`` *as if* (and only *as
 if*) it was a regular scalar::
 
- >>> print 1+(2*Z+3)
+ >>> print(1+(2*Z+3))
  [[4 4 4 4 4 4]
   [4 4 4 6 4 4]
   [4 6 4 6 4 4]
@@ -340,7 +340,7 @@ the impossibility of *broadcasting* the two arrays together. `Broadcasting`_ is
 a very powerful feature of numpy and most of the time, it saves you a lot of
 hassle.  Let's consider for example the following code::
 
-  >>> print Z+1
+  >>> print(Z+1)
   [[1 1 1 1 1 1]
    [1 1 1 2 1 1]
    [1 2 1 2 1 1]
@@ -458,7 +458,7 @@ to check). We then set all ``Z`` values to 0 (all cells become dead) and we use
 the ``birth`` and ``survive`` arrays to conditionally set ``Z`` values
 to 1. And we're done ! Let's test this::
 
-  >>> print Z
+  >>> print(Z)
   [[0 0 0 0 0 0]
    [0 0 0 1 0 0]
    [0 1 0 1 0 0]
@@ -466,7 +466,7 @@ to 1. And we're done ! Let's test this::
    [0 0 0 0 0 0]
    [0 0 0 0 0 0]]
   >>> for i in range(4): iterate_2(Z)
-  >>> print Z
+  >>> print(Z)
   [[0 0 0 0 0 0]
    [0 0 0 0 0 0]
    [0 0 0 0 1 0]
@@ -571,7 +571,7 @@ single array. Numpy allows to do that with the notion of `structured array
   >>> n = 200
   >>> Z = np.zeros((n+2,n+2), [('U', np.double),
                                ('V', np.double)])
-  >>> print Z.dtype
+  >>> print(Z.dtype)
   [('U', '<f8'), ('V', '<f8')]
 
 The size of the array is (n+2,n+2) since we need the borders when computing the
@@ -592,7 +592,7 @@ obtained via the `finite difference method
 
 Finally, we can iterate the computation after havong choosed some interesting parameters::
 
-  for i in xrange(25000):
+  for i in range(25000):
       Lu = laplacian(U)
       Lv = laplacian(V)
       uvv = u*v*v
@@ -628,7 +628,7 @@ Neophyte
    .. code:: python
       :class: solution
 
-      print np.__version__
+      print(np.__version__)
       np.__config__.show()
 
 
@@ -678,7 +678,7 @@ Neophyte
    .. code:: python
       :class: solution   
 
-      print np.nonzero([1,2,0,0,4,0])
+      print(np.nonzero([1,2,0,0,4,0]))
 
 
 8. Declare a 3x3 identity matrix
@@ -849,12 +849,12 @@ Apprentice
       :class: solution   
 
       for dtype in [np.int8, np.int32, np.int64]:
-         print np.iinfo(dtype).min
-         print np.iinfo(dtype).max
+         print(np.iinfo(dtype).min)
+         print(np.iinfo(dtype).max)
       for dtype in [np.float32, np.float64]:
-         print np.finfo(dtype).min
-         print np.finfo(dtype).max
-         print np.finfo(dtype).eps
+         print(np.finfo(dtype).min)
+         print(np.finfo(dtype).max)
+         print(np.finfo(dtype).eps)
 
 
 5. Create a structured array representing a position (x,y) and a color (r,g,b)
