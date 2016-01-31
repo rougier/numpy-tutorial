@@ -592,7 +592,7 @@ obtained via the `finite difference method
 
 Finally, we can iterate the computation after havong choosed some interesting parameters::
 
-  for i in xrange(25000):
+  for i in range(25000):
       Lu = laplacian(U)
       Lv = laplacian(V)
       uvv = u*v*v

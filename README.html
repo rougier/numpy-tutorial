@@ -582,7 +582,7 @@ def laplacian(Z):
 </pre>
 <p>Finally, we can iterate the computation after havong choosed some interesting parameters:</p>
 <pre class="literal-block">
-for i in xrange(25000):
+for i in range(25000):
     Lu = laplacian(U)
     Lv = laplacian(V)
     uvv = u*v*v

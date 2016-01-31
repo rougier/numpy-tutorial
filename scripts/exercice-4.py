@@ -30,7 +30,7 @@ fig.add_axes([0.0, 0.0, 1.0, 1.0], frameon=False)
 im = plt.imshow(Z, interpolation='bicubic', cmap=plt.cm.hot)
 plt.xticks([]), plt.yticks([])
 
-for i in xrange(50000):
+for i in range(50000):
     L = (                 Z[0:-2,1:-1] +
          Z[1:-1,0:-2] - 4*Z[1:-1,1:-1] + Z[1:-1,2:] +
                           Z[2:  ,1:-1] )
