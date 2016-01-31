@@ -1,23 +1,23 @@
-from pylab import *
-from matplotlib.patches import Rectangle
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 def show_array(Z, name):
 
     Z = np.atleast_2d(Z)
     rows,cols = Z.shape
-    fig = figure(figsize=(cols/4.,rows/4.), dpi=72)
+    fig = plt.figure(figsize=(cols/4.,rows/4.), dpi=72)
     ax = plt.subplot(111)
-    #imshow(Z, cmap='Purples', extent=[0,cols,0,rows],
-    #       vmin=-.2, vmax=1, interpolation='nearest', origin='upper')
-    imshow(Z, cmap='Purples', extent=[0,cols,0,rows],
-           interpolation='nearest', origin='upper')
-    xticks([]), yticks([])
+    #plt.imshow(Z, cmap='Purples', extent=[0,cols,0,rows],
+    #           vmin=-.2, vmax=1, interpolation='nearest', origin='upper')
+    plt.imshow(Z, cmap='Purples', extent=[0,cols,0,rows],
+               interpolation='nearest', origin='upper')
+    plt.xticks([]), plt.yticks([])
     for pos in ['top', 'bottom', 'right', 'left']:
         ax.spines[pos].set_edgecolor('k')
         ax.spines[pos].set_alpha(.25)
-    savefig('../figures/%s' % name, dpi=72)
-    #show()
+    plt.savefig('../figures/%s' % name, dpi=72)
+    #plt.show()
 
 
 rows,cols = 5, 9

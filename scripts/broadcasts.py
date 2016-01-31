@@ -1,4 +1,5 @@
-from pylab import *
+import numpy as np
+import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
 
@@ -25,7 +26,7 @@ def show(Z, shape, filename):
                          zorder=+10,edgecolor='black', alpha=.25,facecolor='None')
         ax.add_patch(rect)
         ax.set_axisbelow(True)
-    savefig(filename,dpi=72)
+    plt.savefig(filename,dpi=72)
 
 
 
@@ -83,29 +84,29 @@ show(Z1+Z2, Z.shape, "../figures/broadcast-4.5.png")
 #                 else:
 #                     color = 'k'
 #                     zorder=  +1
-#                 text(ox+x+0.5, rows-0.5-oy-y, '%d' % Z[y,x],
-#                      ha='center', va= 'center', size=24, color=color)    
+#                 plt.text(ox+x+0.5, rows-0.5-oy-y, '%d' % Z[y,x],
+#                          ha='center', va= 'center', size=24, color=color)
 #                 rect = Rectangle((ox+x,rows-1+oy-y),1,1, zorder=zorder,edgecolor=color, facecolor='None')
 #                 ax.add_patch(rect)
     
 #     rows = 4
 #     cols = 5*3 + (5-1)
-#     fig = figure(figsize=(cols,rows), dpi=72, frameon=False)
-#     ax = axes([0.05,0.05,.9,.9], frameon=False)
-#     xlim(0,cols), xticks([])
-#     ylim(0,rows), yticks([])
+#     fig = plt.figure(figsize=(cols,rows), dpi=72, frameon=False)
+#     ax = plt.axes([0.05,0.05,.9,.9], frameon=False)
+#     plt.xlim(0,cols), plt.xticks([])
+#     plt.ylim(0,rows), plt.yticks([])
 #     ox,oy = 0.0125, 0.0125
 #     print_array(Z1,ox+0,oy,Z1)
-#     text(3.5, 2, '+', ha='center', va= 'center', size=48)
+#     plt.text(3.5, 2, '+', ha='center', va= 'center', size=48)
 #     print_array(Z2,ox+4,oy,Z2)
-#     text(7.5, 2, '=', ha='center', va= 'center', size=48)
+#     plt.text(7.5, 2, '=', ha='center', va= 'center', size=48)
 #     print_array(Z3,ox+8,oy,Z1)
-#     text(11.5, 2, '+', ha='center', va= 'center', size=48)
+#     plt.text(11.5, 2, '+', ha='center', va= 'center', size=48)
 #     print_array(Z4,ox+12,oy,Z2)
-#     text(15.5, 2, '=', ha='center', va= 'center', size=48)
+#     plt.text(15.5, 2, '=', ha='center', va= 'center', size=48)
 #     print_array(Z5,ox+16,oy,Z5)
-# #    savefig('../figures/%s' % name, dpi=32)
-# #    show()
+# #    plt.savefig('../figures/%s' % name, dpi=32)
+# #    plt.show()
 
 
 
