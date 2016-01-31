@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------------
 # Copyright INRIA
 # Contributors: Nicolas P. Rougier (Nicolas.Rougier@inria.fr)
