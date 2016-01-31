@@ -1,24 +1,25 @@
-from pylab import *
-from matplotlib.patches import Rectangle
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 def show_slice(Z, name):
     Z = np.atleast_2d(Z)
     rows,cols = Z.shape
-    fig = figure(figsize=(cols,rows), dpi=72, frameon=False)
-    #ax = subplot(111, frameon=False)
-    ax = axes([0,0,1,1], frameon=False)
+    fig = plt.figure(figsize=(cols,rows), dpi=72, frameon=False)
+    #ax = plt.subplot(111, frameon=False)
+    ax = plt.axes([0,0,1,1], frameon=False)
     A = np.arange(rows*cols).reshape(rows,cols)
-    imshow(Z, cmap='Purples', extent=[0,cols,0,rows],
-           vmin=0, vmax=max(1,Z.max()), interpolation='nearest', origin='upper')
-    #xticks(1.05+np.arange(cols-1),[]), yticks(1+np.arange(rows-1),[])
-    xticks([]), yticks([])
+    plt.imshow(Z, cmap='Purples', extent=[0,cols,0,rows],
+               vmin=0, vmax=max(1,Z.max()), interpolation='nearest',
+               origin='upper')
+    #plt.xticks(1.05+np.arange(cols-1),[]), plt.yticks(1+np.arange(rows-1),[])
+    plt.xticks([]), plt.yticks([])
     #ax.grid(which='major', axis='x', linewidth=1.5, linestyle='-', color='w')
     #ax.grid(which='major', axis='y', linewidth=1.5, linestyle='-', color='w')
     #ax.tick_params(axis='x', colors='w')
     #ax.tick_params(axis='y', colors='w')
-    savefig('../figures/%s' % name, dpi=16)
-    #show()
+    plt.savefig('../figures/%s' % name, dpi=16)
+    #plt.show()
 
 
 rows,cols = 5, 9
