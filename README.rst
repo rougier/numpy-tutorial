@@ -328,9 +328,9 @@ corresponds to the formula above applied individually to each element. Said
 differently, we have ``(1+(2*Z+3))[i,j] == (1+(2*Z[i,j]+3))`` for any i,j.
 
 Ok, so far, so good. Now what happens if we add Z with one of its subpart,
-let's say ``Z[-1:1,-1:1]`` ?
+let's say ``Z[1:-1,1:-1]`` ?
 
-  >>> Z + Z[-1:1,-1:1]
+  >>> Z + Z[1:-1,1:-1]
   Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
   ValueError: operands could not be broadcast together with shapes (6,6) (4,4)  
