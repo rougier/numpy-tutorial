@@ -322,10 +322,10 @@ if</em>) it was a regular scalar:</p>
 corresponds to the formula above applied individually to each element. Said
 differently, we have <tt class="docutils literal"><span class="pre">(1+(2*Z+3))[i,j]</span> == <span class="pre">(1+(2*Z[i,j]+3))</span></tt> for any i,j.</p>
 <p>Ok, so far, so good. Now what happens if we add Z with one of its subpart,
-let's say <tt class="docutils literal"><span class="pre">Z[-1:1,-1:1]</span></tt> ?</p>
+let's say <tt class="docutils literal"><span class="pre">Z[1:-1,1:-1]</span></tt> ?</p>
 <blockquote>
 <pre class="doctest-block">
-&gt;&gt;&gt; Z + Z[-1:1,-1:1]
+&gt;&gt;&gt; Z + Z[1:-1,1:-1]
 Traceback (most recent call last):
 File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
 ValueError: operands could not be broadcast together with shapes (6,6) (4,4)
