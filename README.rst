@@ -18,12 +18,11 @@ Sources are available from `github <https://github.com/rougier/numpy-tutorial>`_
 All code and material is licensed under a `Creative Commons
 Attribution-ShareAlike 4.0 <http://creativecommons.org/licenses/by-sa/4.0>`_.
 
-Tutorial can be read at http://www.labri.fr/perso/nrougier/teaching/numpy/numpy.html
 
 See also:
+ * `From Python to Numpy <https://www.labri.fr/perso/nrougier/from-python-to-numpy/>`_
  * `Matplotlib tutorial <http://www.labri.fr/perso/nrougier/teaching/matplotlib/matplotlib.html>`_
  * `100 Numpy exercices <http://www.labri.fr/perso/nrougier/teaching/numpy.100/index.html>`_
-
 
 Introduction
 ============
