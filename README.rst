@@ -589,7 +589,7 @@ obtained via the `finite difference method
               Z[1:-1,0:-2] - 4*Z[1:-1,1:-1] + Z[1:-1,2:] +
                                Z[2:  ,1:-1] )
 
-Finally, we can iterate the computation after havong choosed some interesting parameters::
+Finally, we can iterate the computation after choosing some interesting parameters::
 
   for i in range(25000):
       Lu = laplacian(U)
